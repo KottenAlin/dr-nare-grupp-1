@@ -1,14 +1,16 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <MPU6050_light.h>
-#include <Servo.h>
+#include <ESP32Servo.h>
 #include <pid_controller.hpp>
+#include <input.hpp>
 
 const int BASE_THROTTLE = 1300;
 const int MIN_THROTTLE = 1100;
 const int MAX_THROTTLE = 1700;
 
-MPU6050 mpu;
+Input input;
+MPU6050 mpu = MPU6050(Wire);
 Servo esc[4]; // FV, FH, BV, BH
 
 double pitch[4] = {-1, -1, 1, 1};
@@ -23,6 +25,7 @@ PIDController pidR(1.2, 0.05, 0.25, yaw);
 void setup()
 {
   Serial.begin(115200);
+  input.begin();
   Wire.begin(21, 22);
   mpu.begin();
   mpu.calcGyroOffsets();
@@ -53,10 +56,10 @@ void loop()
   pidZ.setInput(mpu.getAngleZ());
   pidR.setInput(mpu.getGyroZ());
 
-  pidX.setSetpoint(0);
-  pidY.setSetpoint(0);
-  pidZ.setSetpoint(0);
-  pidR.setSetpoint(0);
+  pidX.setSetpoint(input.getPitch());
+  pidY.setSetpoint(input.getRoll());
+  pidZ.setSetpoint(input.getThrottle());
+  pidR.setSetpoint(input.getYaw());
 
   double *outputX = pidX.getOutputs();
   double *outputY = pidY.getOutputs();
