@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <MPU6050_tockn.h>
+#include <MPU6050_light.h>
 #include <Servo.h>
 #include <pid_controller.hpp>
 
@@ -23,7 +23,7 @@ void setup()
   Serial.begin(115200);
   Wire.begin(21, 22);
   mpu.begin();
-  mpu.calcGyroOffsets(true);
+  mpu.calcGyroOffsets();
 
   const int escPins[4] = {25, 26, 27, 14};
   for (int i = 0; i < 4; i++)
