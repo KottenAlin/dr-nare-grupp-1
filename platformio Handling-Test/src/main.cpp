@@ -39,7 +39,27 @@ void loop()
 {
   mpu.update();
 
-  // hantera input
+  double inputXRaw = 0;
+  double inputYRaw = 0;
+  double inputZRaw = 0;
+  double inputRRaw = 0;
+
+  double inputX[4], inputY[4], inputZ[4], inputR[4];
+
+  for (int i = 0; i < 4; i++)
+  {
+    inputX[i] = pitch[i] * inputXRaw;
+    inputY[i] = roll[i] * inputYRaw;
+    inputZ[i] = throttle[i] * inputZRaw;
+    inputR[i] = yaw[i] * inputRRaw;
+  }
+
+  for (int i = 0; i < 4; i++)
+  {
+    int output = constrain(BASE_THROTTLE + inputX[i] + inputY[i] + inputZ[i] + inputR[i], MIN_THROTTLE, MAX_THROTTLE);
+    esc[i].writeMicroseconds(output);
+    Serial.printf("ESC[%d]: %d\n", i, output);
+  }
 
   delay(10);
 }

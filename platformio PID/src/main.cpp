@@ -53,6 +53,11 @@ void loop()
   pidZ.setInput(mpu.getAngleZ());
   pidR.setInput(mpu.getGyroZ());
 
+  pidX.setSetpoint(0);
+  pidY.setSetpoint(0);
+  pidZ.setSetpoint(0);
+  pidR.setSetpoint(0);
+
   double *outputX = pidX.getOutputs();
   double *outputY = pidY.getOutputs();
   double *outputZ = pidZ.getOutputs();
