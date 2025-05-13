@@ -13,10 +13,12 @@ Servo esc[4]; // FV, FH, BV, BH
 
 double pitch[4] = {-1, -1, 1, 1};
 double roll[4] = {-1, 1, -1, 1};
-double altitude[4] = {1, 1, 1, 1};
+double throttle[4] = {1, 1, 1, 1};
+double yaw[4] = {1, -1, -1, 1};
 PIDController pidX(1.2, 0.05, 0.25, pitch);
 PIDController pidY(1.2, 0.05, 0.25, roll);
-PIDController pidZ(1.2, 0.05, 0.25, altitude);
+PIDController pidZ(1.2, 0.05, 0.25, throttle);
+PIDController pidR(1.2, 0.05, 0.25, yaw);
 
 void setup()
 {
@@ -40,6 +42,7 @@ void setup()
   pidX.initialize();
   pidY.initialize();
   pidZ.initialize();
+  pidR.initialize();
 }
 
 void loop()
@@ -48,14 +51,16 @@ void loop()
   pidX.setInput(mpu.getAngleX());
   pidY.setInput(mpu.getAngleY());
   pidZ.setInput(mpu.getAngleZ());
+  pidR.setInput(mpu.getGyroZ());
 
   double *outputX = pidX.getOutputs();
   double *outputY = pidY.getOutputs();
   double *outputZ = pidZ.getOutputs();
+  double *outputR = pidR.getOutputs();
 
   for (int i = 0; i < 4; i++)
   {
-    int output = constrain(BASE_THROTTLE + outputX[i] + outputY[i] + outputZ[i], MIN_THROTTLE, MAX_THROTTLE);
+    int output = constrain(BASE_THROTTLE + outputX[i] + outputY[i] + outputZ[i] + outputR[i], MIN_THROTTLE, MAX_THROTTLE);
     esc[i].writeMicroseconds(output);
     Serial.printf("ESC[%d]: %d\n", i, output);
   }
