@@ -30,5 +30,5 @@ double Input::getThrottle()
 }
 double Input::getYaw()
 {
-    return PS4.R1() * 100 - PS4.L1() * 100;
+    return 128 * (PS4.R1() - PS4.L1());
 }

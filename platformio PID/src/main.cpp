@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <MPU6050_light.h>
 #include <ESP32Servo.h>
-#include <pid_controller.hpp>
+#include <pid_manager.hpp>
 #include <input.hpp>
 
 const int BASE_THROTTLE = 1300;
@@ -13,14 +13,19 @@ Input input;
 MPU6050 mpu = MPU6050(Wire);
 Servo esc[4]; // FV, FH, BV, BH
 
+double kPitch[3] = {1.2, 0.05, 0.25};
+double kRoll[3] = {1.2, 0.05, 0.25};
+double kThrottle[3] = {1.2, 0.05, 0.25};
+double kYaw[3] = {1.2, 0.05, 0.25};
+
 double pitch[4] = {-1, -1, 1, 1};
 double roll[4] = {-1, 1, -1, 1};
 double throttle[4] = {1, 1, 1, 1};
 double yaw[4] = {1, -1, -1, 1};
-PIDController pidX(1.2, 0.05, 0.25, pitch);
-PIDController pidY(1.2, 0.05, 0.25, roll);
-PIDController pidZ(1.2, 0.05, 0.25, throttle);
-PIDController pidR(1.2, 0.05, 0.25, yaw);
+
+double *kParams[4] = {kPitch, kRoll, kThrottle, kYaw};
+double *axes[4] = {pitch, roll, throttle, yaw};
+PIDManager pid(kParams, axes);
 
 void setup()
 {
@@ -42,33 +47,23 @@ void setup()
   }
   delay(2000);
 
-  pidX.initialize();
-  pidY.initialize();
-  pidZ.initialize();
-  pidR.initialize();
+  pid.initialize();
 }
 
 void loop()
 {
   mpu.update();
-  pidX.setInput(mpu.getAngleX());
-  pidY.setInput(mpu.getAngleY());
-  pidZ.setInput(mpu.getAngleZ());
-  pidR.setInput(mpu.getGyroZ());
+  double inputs[4] = {mpu.getAngleX(), mpu.getAngleY(), mpu.getAngleZ(), mpu.getGyroZ()};
+  pid.setInputs(inputs);
 
-  pidX.setSetpoint(input.getPitch());
-  pidY.setSetpoint(input.getRoll());
-  pidZ.setSetpoint(input.getThrottle());
-  pidR.setSetpoint(input.getYaw());
+  double setpoints[4] = {input.getPitch(), input.getRoll(), input.getThrottle(), input.getYaw()};
+  pid.setSetpoints(setpoints);
 
-  double *outputX = pidX.getOutputs();
-  double *outputY = pidY.getOutputs();
-  double *outputZ = pidZ.getOutputs();
-  double *outputR = pidR.getOutputs();
+  double *outputs = pid.getOutputs();
 
   for (int i = 0; i < 4; i++)
   {
-    int output = constrain(BASE_THROTTLE + outputX[i] + outputY[i] + outputZ[i] + outputR[i], MIN_THROTTLE, MAX_THROTTLE);
+    int output = constrain(BASE_THROTTLE + outputs[i], MIN_THROTTLE, MAX_THROTTLE);
     esc[i].writeMicroseconds(output);
     Serial.printf("ESC[%d]: %d\n", i, output);
   }

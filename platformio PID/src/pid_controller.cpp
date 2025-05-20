@@ -1,6 +1,6 @@
 #include <pid_controller.hpp>
-PIDController::PIDController(double kp, double ki, double kd, double const throttleFactors[4])
-    : Kp(kp), Ki(ki), Kd(kd), pid(&input, &output, &setpoint, kp, ki, kd, DIRECT)
+PIDController::PIDController(double *k, double const throttleFactors[4])
+    : pid(&input, &output, &setpoint, k[0], k[1], k[2], DIRECT)
 {
     setpoint = 0;
     for (int i = 0; i < 4; ++i)
