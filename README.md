@@ -10,7 +10,7 @@ Genomförda felsökningssteg:
 
         Två olika ESP32-moduler har testats.
 
-        Två olika motorer har använts (tre totalt om man räknar med de stulna).
+        Två olika uppsättningar motorer har använts (tre totalt om man räknar med de stulna).
 
         Två olika ESC:er har testats (tre totalt inklusive de ursprungliga).
 
@@ -37,5 +37,7 @@ Genomförda felsökningssteg:
         En kondensator kopplades in för att stabilisera spänningen, men detta löste inte problemet.
 
         Oscilloskop användes för att analysera de signaler som skickades till motorerna.
+
+        En multimeter användes också för att försöka mäta signalerna.
 
 Vi misstänker att problemet kan ligga i samspelet mellan vår ESP32 och de specifika komponenterna i det nya kitet, eftersom Sebastians drönare fungerade utan problem med hans egen flight controller.
