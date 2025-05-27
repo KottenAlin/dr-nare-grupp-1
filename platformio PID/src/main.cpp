@@ -41,9 +41,9 @@ void setup()
     esc[i].attach(escPins[i]);
   }
 
-  for (int i = 0; i < 16; i++)
+  for (int i = 0; i < 4; i++)
   {
-    esc[i % 4].writeMicroseconds(1000);
+    esc[i].writeMicroseconds(1000);
   }
   delay(2000);
 
@@ -52,6 +52,18 @@ void setup()
 
 void loop()
 {
+  if (!input.isConnected())
+  {
+    Serial.println("PS4 controller not connected");
+    for (int i = 0; i < 4; i++)
+    {
+      esc[i].writeMicroseconds(BASE_THROTTLE - 200);
+      Serial.printf("ESC[%d]: %d\n", i, BASE_THROTTLE - 200);
+    }
+    delay(100);
+    return;
+  }
+
   mpu.update();
   double inputs[4] = {mpu.getAngleX(), mpu.getAngleY(), mpu.getAngleZ(), mpu.getGyroZ()};
   pid.setInputs(inputs);

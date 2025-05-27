@@ -13,7 +13,7 @@ public:
     double *getOutputs();
 
 private:
-    PIDController *pidControllers;
+    PIDController pidControllers[4];
 };
 
 #endif

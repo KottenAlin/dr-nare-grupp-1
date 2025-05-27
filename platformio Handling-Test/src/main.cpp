@@ -8,7 +8,7 @@ const int BASE_THROTTLE = 1300;
 const int MIN_THROTTLE = 1100;
 const int MAX_THROTTLE = 1700;
 
-MPU6050 mpu = MPU6050(Wire);
+// MPU6050 mpu = MPU6050(Wire);
 Servo esc[4]; // FV, FH, BV, BH
 Input input;
 
@@ -25,16 +25,16 @@ void setup()
   // mpu.begin();
   // mpu.calcGyroOffsets();
 
-  // const int escPins[4] = {25, 26, 27, 14};
-  // for (int i = 0; i < 4; i++)
-  // {
-  // esc[i].attach(escPins[i]);
-  // }
+  const int escPins[4] = {25, 26, 27, 14};
+  for (int i = 0; i < 4; i++)
+  {
+    esc[i].attach(escPins[i]);
+  }
 
-  // for (int i = 0; i < 16; i++)
-  // {
-  // esc[i % 4].writeMicroseconds(1000);
-  // }
+  for (int i = 0; i < 4; i++)
+  {
+    esc[i].writeMicroseconds(1000);
+  }
   delay(2000);
 }
 
@@ -42,19 +42,25 @@ void loop()
 {
   // mpu.update();
 
-  delay(500);
+  delay(50);
 
   if (!input.isConnected())
   {
-    Serial.println("PS4 controller not connected!");
+    Serial.println("PS4 controller not connected");
+    for (int i = 0; i < 4; i++)
+    {
+      esc[i].writeMicroseconds(BASE_THROTTLE - 200);
+      Serial.printf("ESC[%d]: %d\n", i, BASE_THROTTLE - 200);
+    }
     return;
   }
+
   double inputXRaw = input.getPitch();
   double inputYRaw = input.getRoll();
   double inputZRaw = input.getThrottle();
   double inputRRaw = input.getYaw();
 
-  Serial.printf("Raw Inputs - Pitch: %.2f, Roll: %.2f, Throttle: %.2f, Yaw: %.2f\n", inputXRaw, inputYRaw, inputZRaw, inputRRaw);
+  Serial.printf("Raw - P: %.2f, R: %.2f, T: %.2f, Y: %.2f\n", inputXRaw, inputYRaw, inputZRaw, inputRRaw);
 
   double inputX[4], inputY[4], inputZ[4], inputR[4];
 
@@ -70,7 +76,7 @@ void loop()
   for (int i = 0; i < 4; i++)
   {
     outputs[i] = constrain(BASE_THROTTLE + inputX[i] + inputY[i] + inputZ[i] + inputR[i], MIN_THROTTLE, MAX_THROTTLE);
-    // esc[i].writeMicroseconds(outputs[i]);
+    esc[i].writeMicroseconds(outputs[i]);
   }
   Serial.printf("ESC[0]: %d  ESC[1]: %d  ESC[2]: %d  ESC[3]: %d\n", outputs[0], outputs[1], outputs[2], outputs[3]);
 }

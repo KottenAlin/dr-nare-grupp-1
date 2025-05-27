@@ -1,11 +1,12 @@
 #include <pid_manager.hpp>
 
 PIDManager::PIDManager(double **k, double **throttles)
+    : pidControllers{
+          PIDController(k[0], throttles[0]),
+          PIDController(k[1], throttles[1]),
+          PIDController(k[2], throttles[2]),
+          PIDController(k[3], throttles[3])}
 {
-    for (int i = 0; i < 4; ++i)
-    {
-        pidControllers[i] = PIDController(k[i], throttles[i]);
-    }
 }
 
 void PIDManager::initialize()
