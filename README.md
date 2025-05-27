@@ -41,3 +41,5 @@ Genomförda felsökningssteg:
         En multimeter användes också för att försöka mäta signalerna.
 
 Vi misstänker att problemet kan ligga i samspelet mellan vår ESP32 och de specifika komponenterna i det nya kitet, eftersom Sebastians drönare fungerade utan problem med hans egen flight controller.
+ESC PINOUT felaktig +/- pol.
+Signal inte kopplad till ground (hittad genom oscilloskop- och multimeterfelsökning.
