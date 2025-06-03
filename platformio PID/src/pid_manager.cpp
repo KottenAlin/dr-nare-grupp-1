@@ -4,14 +4,13 @@ PIDManager::PIDManager(double **k, double **throttles)
     : pidControllers{
           PIDController(k[0], throttles[0]),
           PIDController(k[1], throttles[1]),
-          PIDController(k[2], throttles[2]),
-          PIDController(k[3], throttles[3])}
+          PIDController(k[2], throttles[2])}
 {
 }
 
 void PIDManager::initialize()
 {
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         pidControllers[i].initialize();
     }
@@ -19,7 +18,7 @@ void PIDManager::initialize()
 
 void PIDManager::setInputs(double *inputs)
 {
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         pidControllers[i].setInput(inputs[i]);
     }
@@ -27,7 +26,7 @@ void PIDManager::setInputs(double *inputs)
 
 void PIDManager::setSetpoints(double *setpoints)
 {
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         pidControllers[i].setSetpoint(setpoints[i]);
     }
@@ -36,7 +35,7 @@ void PIDManager::setSetpoints(double *setpoints)
 double *PIDManager::getOutputs()
 {
     static double outputs[4];
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         double *pidOutput = pidControllers[i].getOutputs();
         outputs[i] = 0;

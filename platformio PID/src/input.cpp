@@ -18,17 +18,27 @@ bool Input::isConnected()
 
 double Input::getPitch()
 {
-    return PS4.RStickY();
+    double raw = PS4.RStickY();
+    if (raw < 20) // deadzone
+        return 0.0;
+    return raw / 4.0; // [-32, 32]
 }
 double Input::getRoll()
 {
-    return PS4.RStickX();
+    double raw = PS4.RStickX();
+    if (raw < 20) // deadzone
+        return 0.0;
+    return raw / 4.0; // [-32, 32]
 }
 double Input::getThrottle()
 {
-    return PS4.R2Value() - PS4.L2Value();
+    double raw = PS4.L2Value() - PS4.R2Value();
+    if (raw < 40) // deadzone
+        return 0.0;
+    return 2.0 * raw; // [-255, 255]
 }
 double Input::getYaw()
 {
-    return 128 * (PS4.R1() - PS4.L1());
+    double raw = PS4.R1() - PS4.L1();
+    return 32.0 * raw; // [-32, 32]
 }

@@ -25,7 +25,7 @@ void setup()
   // mpu.begin();
   // mpu.calcGyroOffsets();
 
-  const int escPins[4] = {25, 26, 27, 14};
+  const int escPins[4] = {25, 26, 27, 33};
   for (int i = 0; i < 4; i++)
   {
     esc[i].attach(escPins[i]);

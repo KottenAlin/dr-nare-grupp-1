@@ -5,7 +5,7 @@
 #include <pid_manager.hpp>
 #include <input.hpp>
 
-const int BASE_THROTTLE = 1300;
+const int BASE_THROTTLE = 1400;
 const int MIN_THROTTLE = 1100;
 const int MAX_THROTTLE = 1700;
 
@@ -15,16 +15,14 @@ Servo esc[4]; // FV, FH, BV, BH
 
 double kPitch[3] = {1.2, 0.05, 0.25};
 double kRoll[3] = {1.2, 0.05, 0.25};
-double kThrottle[3] = {1.2, 0.05, 0.25};
 double kYaw[3] = {1.2, 0.05, 0.25};
 
 double pitch[4] = {-1, -1, 1, 1};
 double roll[4] = {-1, 1, -1, 1};
-double throttle[4] = {1, 1, 1, 1};
 double yaw[4] = {1, -1, -1, 1};
 
-double *kParams[4] = {kPitch, kRoll, kThrottle, kYaw};
-double *axes[4] = {pitch, roll, throttle, yaw};
+double *kParams[3] = {kPitch, kRoll, kYaw};
+double *axes[3] = {pitch, roll, yaw};
 PIDManager pid(kParams, axes);
 
 void setup()
@@ -57,25 +55,26 @@ void loop()
     Serial.println("PS4 controller not connected");
     for (int i = 0; i < 4; i++)
     {
-      esc[i].writeMicroseconds(BASE_THROTTLE - 200);
-      Serial.printf("ESC[%d]: %d\n", i, BASE_THROTTLE - 200);
+      esc[i].writeMicroseconds(BASE_THROTTLE - 100);
+      Serial.printf("ESC[%d]: %d\n", i, BASE_THROTTLE - 100);
     }
     delay(100);
     return;
   }
 
   mpu.update();
-  double inputs[4] = {mpu.getAngleX(), mpu.getAngleY(), mpu.getAngleZ(), mpu.getGyroZ()};
+  double inputs[3] = {mpu.getAngleX(), mpu.getAngleY(), mpu.getGyroZ()};
   pid.setInputs(inputs);
 
-  double setpoints[4] = {input.getPitch(), input.getRoll(), input.getThrottle(), input.getYaw()};
+  double setpoints[3] = {input.getPitch(), input.getRoll(), input.getYaw()};
   pid.setSetpoints(setpoints);
 
   double *outputs = pid.getOutputs();
+  int throttle = constrain(BASE_THROTTLE + input.getThrottle(), MIN_THROTTLE, MAX_THROTTLE);
 
   for (int i = 0; i < 4; i++)
   {
-    int output = constrain(BASE_THROTTLE + outputs[i], MIN_THROTTLE, MAX_THROTTLE);
+    int output = constrain(throttle + outputs[i], MIN_THROTTLE, MAX_THROTTLE);
     esc[i].writeMicroseconds(output);
     Serial.printf("ESC[%d]: %d\n", i, output);
   }
