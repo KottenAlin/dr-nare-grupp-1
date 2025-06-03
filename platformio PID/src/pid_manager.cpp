@@ -34,12 +34,12 @@ void PIDManager::setSetpoints(double *setpoints)
 
 double *PIDManager::getOutputs()
 {
-    static double outputs[4];
+    static double outputs[3];
     for (int i = 0; i < 3; ++i)
     {
         double *pidOutput = pidControllers[i].getOutputs();
         outputs[i] = 0;
-        for (int j = 0; j < 4; ++j)
+        for (int j = 0; j < 3; ++j)
         {
             outputs[i] += pidOutput[j];
         }
