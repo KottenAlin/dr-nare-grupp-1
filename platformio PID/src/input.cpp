@@ -39,6 +39,52 @@ double Input::getThrottle()
 }
 double Input::getYaw()
 {
-    double raw = PS4.R1() - PS4.L1();
-    return 32.0 * raw; // [-32, 32]
+    double raw = PS4.LStickX(); // Changed from R1/L1 to left stick X-axis
+    if (abs(raw) < 20)          // deadzone
+        return 0.0;
+    return raw / 4.0; // [-32, 32]
+}
+
+// Calibration helper methods
+bool Input::getCalibrationButton()
+{
+    return PS4.Triangle();
+}
+
+bool Input::getEmergencyStop()
+{
+    return PS4.Cross();
+}
+
+bool Input::getMinSpeedTest()
+{
+    return PS4.Square();
+}
+
+bool Input::getMediumSpeedTest()
+{
+    return PS4.Circle();
+}
+
+int Input::getIndividualMotorTest()
+{
+    if (PS4.Up())
+        return 0; // Front Vertical
+    if (PS4.Right())
+        return 1; // Front Horizontal
+    if (PS4.Down())
+        return 2; // Back Vertical
+    if (PS4.Left())
+        return 3; // Back Horizontal
+    return -1;    // No motor selected
+}
+
+bool Input::getProgressiveTest()
+{
+    return PS4.L1(); // L1 button for progressive test
+}
+
+bool Input::getDirectionTest()
+{
+    return PS4.R1(); // R1 button for direction test
 }
