@@ -15,8 +15,10 @@ public:
     // Calibration helper methods
     bool getCalibrationButton();
     bool getEmergencyStop();
-    bool getMinSpeedTest();
-    bool getMediumSpeedTest();
+    /*bool getMinSpeedTest();
+    bool getMediumSpeedTest();*/
+    bool increaseThrottle();      // Triangle button for increasing throttle
+    bool decreaseThrottle();      // Cross button for decreasing throttle
     int getIndividualMotorTest(); // Returns motor index (0-3) or -1 if none
     bool getProgressiveTest();
     bool getDirectionTest();

@@ -6,7 +6,7 @@
 #include <input.hpp>
 #include <motor_calibration.hpp>
 
-const int BASE_THROTTLE = 1000;
+int BASE_THROTTLE = 1000;
 const int MIN_THROTTLE = 1000;
 const int MAX_THROTTLE = 1700;
 
@@ -15,12 +15,12 @@ MPU6050 mpu = MPU6050(Wire);
 Servo esc[4]; // FV, FH, BV, BH
 MotorCalibration motorCalibration(esc, &input);
 
-double kPitch[3] = {1.2, 0.00, 0.0};
-double kRoll[3] = {1.2, 0.00, 0.0};
-double kYaw[3] = {0.8, 0.000, 0.00};
+double kPitch[3] = {4.0, 0.01, 0.08};
+double kRoll[3] = {4.0, 0.01, 0.08};
+double kYaw[3] = {0.4, 0.002, 0.02};
 
-double pitch[4] = {-1, -1, 1, 1};
-double roll[4] = {-1, 1, -1, 1};
+double pitch[4] = {-1, 1, -1, 1};
+double roll[4] = {1, 1, -1, -1}; //
 double yaw[4] = {1, -1, -1, 1};
 
 double *kParams[3] = {kPitch, kRoll, kYaw};
@@ -77,7 +77,27 @@ void loop()
     return;
   }
 
+  if (input.increaseThrottle())
+  {
+    BASE_THROTTLE = constrain(BASE_THROTTLE + 10, MIN_THROTTLE, MAX_THROTTLE);
+    Serial.printf("Increased base throttle to %d µs\n", BASE_THROTTLE);
+  }
+  if (input.decreaseThrottle())
+  {
+    BASE_THROTTLE = constrain(BASE_THROTTLE - 10, MIN_THROTTLE, MAX_THROTTLE);
+    Serial.printf("Decreased base throttle to %d µs\n", BASE_THROTTLE);
+  }
+
   // Normal flight operation
+  if (input.getEmergencyStop())
+  {
+    BASE_THROTTLE = 1000;             // Reset base throttle to minimum after emergency stop
+    motorCalibration.emergencyStop(); // Emergency stop if Cross button is pressed
+    delay(1000);
+
+    return;
+  }
+
   mpu.update();
   double inputs[3] = {mpu.getAngleX(), mpu.getAngleY(), mpu.getGyroZ()};
   pid.setInputs(inputs);
@@ -95,6 +115,10 @@ void loop()
     double motorCorrection = pitch[i] * outputs[0] +
                              roll[i] * outputs[1] +
                              yaw[i] * outputs[2]; // Calculate the correction for each motor based on PID outputs
+    if (abs(motorCorrection) < 10)
+    {
+      motorCorrection = 0;
+    }
     int output = constrain(throttle + motorCorrection, MIN_THROTTLE, MAX_THROTTLE);
 
     esc[i].writeMicroseconds(output);                                                     // Write the calculated output to each ESC

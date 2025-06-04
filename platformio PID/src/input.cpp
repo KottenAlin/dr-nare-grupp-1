@@ -18,15 +18,15 @@ bool Input::isConnected()
 
 double Input::getPitch()
 {
-    double raw = PS4.RStickY();
-    if (raw < 20) // deadzone
+    double raw = PS4.RStickY(); // Changed from R1/L1 to right stick Y-axis
+    if (raw < 20)               // deadzone
         return 0.0;
     return raw / 4.0; // [-32, 32]
 }
 double Input::getRoll()
 {
-    double raw = PS4.RStickX();
-    if (raw < 20) // deadzone
+    double raw = PS4.RStickX(); // Changed from R1/L1 to right stick X-axis
+    if (raw < 20)               // deadzone
         return 0.0;
     return raw / 4.0; // [-32, 32]
 }
@@ -48,15 +48,25 @@ double Input::getYaw()
 // Calibration helper methods
 bool Input::getCalibrationButton()
 {
-    return PS4.Triangle();
+    return PS4.Square();
 }
 
 bool Input::getEmergencyStop()
 {
-    return PS4.Cross();
+    return PS4.Circle();
 }
 
-bool Input::getMinSpeedTest()
+bool Input::increaseThrottle()
+{
+    return PS4.Triangle(); // Triangle button for increasing throttle
+}
+
+bool Input::decreaseThrottle()
+{
+    return PS4.Cross(); // Cross button for decreasing throttle
+}
+
+/*bool Input::getMinSpeedTest()
 {
     return PS4.Square();
 }
@@ -64,7 +74,7 @@ bool Input::getMinSpeedTest()
 bool Input::getMediumSpeedTest()
 {
     return PS4.Circle();
-}
+}*/
 
 int Input::getIndividualMotorTest()
 {

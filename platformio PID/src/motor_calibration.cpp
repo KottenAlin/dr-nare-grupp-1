@@ -77,7 +77,7 @@ void MotorCalibration::handleCalibrationInput()
         return;
 
     // Square button: Test all motors at minimum speed
-    if (input->getMinSpeedTest())
+    /*if (input->getMinSpeedTest())
     {
         lastButtonPress = currentTime;
         testMotorsAtMinSpeed();
@@ -88,7 +88,7 @@ void MotorCalibration::handleCalibrationInput()
     {
         lastButtonPress = currentTime;
         testMotorsAtMediumSpeed();
-    }
+    } */
 
     // L1 button: Progressive speed test
     if (input->getProgressiveTest())
