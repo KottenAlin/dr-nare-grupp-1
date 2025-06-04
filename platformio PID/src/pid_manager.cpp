@@ -35,14 +35,10 @@ void PIDManager::setSetpoints(double *setpoints)
 double *PIDManager::getOutputs()
 {
     static double outputs[3];
-    for (int i = 0; i < 3; ++i) // Iterate through each PID controller
+    for (int i = 0; i < 3; ++i)
     {
-        double *pidOutput = pidControllers[i].getOutputs();
-        outputs[i] = 0;
-        for (int j = 0; j < 4; ++j) // Iterate through the outputs of each PID controller
-        {
-            outputs[i] += pidOutput[j]; // Sum the outputs from each PID controller
-        }
+        pidControllers[i].getOutputs();             // Compute the PID output
+        outputs[i] = pidControllers[i].getOutput(); // Get the single output value for this axis
     }
     return outputs;
 }

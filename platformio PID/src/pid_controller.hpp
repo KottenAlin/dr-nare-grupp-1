@@ -17,6 +17,7 @@ public:
     void setInput(double newInput);
     void setSetpoint(double newSetpoint);
     double *getOutputs();
+    double getOutput() const { return output; }
 };
 
 #endif

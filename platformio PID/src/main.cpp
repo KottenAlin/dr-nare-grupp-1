@@ -15,9 +15,9 @@ MPU6050 mpu = MPU6050(Wire);
 Servo esc[4]; // FV, FH, BV, BH
 MotorCalibration motorCalibration(esc, &input);
 
-double kPitch[3] = {0.6, 0.01, 0.1};
-double kRoll[3] = {0.6, 0.01, 0.1};
-double kYaw[3] = {0.4, 0.005, 0.05};
+double kPitch[3] = {1.2, 0.00, 0.0};
+double kRoll[3] = {1.2, 0.00, 0.0};
+double kYaw[3] = {0.8, 0.000, 0.00};
 
 double pitch[4] = {-1, -1, 1, 1};
 double roll[4] = {-1, 1, -1, 1};
@@ -88,14 +88,17 @@ void loop()
   double *outputs = pid.getOutputs(); // Get PID outputs for pitch, roll, and yaw
   int throttle = constrain(BASE_THROTTLE + input.getThrottle(), MIN_THROTTLE, MAX_THROTTLE);
 
+  // Serial.printf("outputs: P=%.2f, R=%.2f, Y=%.2f, Throttle=%d\n", outputs[0], outputs[1], outputs[2], throttle);
+
   for (int i = 0; i < 4; i++)
   {
     double motorCorrection = pitch[i] * outputs[0] +
                              roll[i] * outputs[1] +
                              yaw[i] * outputs[2]; // Calculate the correction for each motor based on PID outputs
-    int output = constrain(throttle /*+ motorCorrection*/, MIN_THROTTLE, MAX_THROTTLE);
-    esc[i].writeMicroseconds(output); // Write the calculated output to each ESC
-    // Serial.printf("Motor %d output: %d\n", i, output); // Print motor outputs for debugging
+    int output = constrain(throttle + motorCorrection, MIN_THROTTLE, MAX_THROTTLE);
+
+    esc[i].writeMicroseconds(output);                                                     // Write the calculated output to each ESC
+    Serial.printf("Motor %d output: %d, correction: %.2f\n", i, output, motorCorrection); // Print motor outputs and correction for debugging
 
     delay(10);
   }
